@@ -1,0 +1,28 @@
+#container {
+    background-color: rgb(228, 228, 228);
+}
+
+#postHeader {
+    margin: 1;
+    background-color: rgb(49, 45, 45);
+    display: inline-flex;
+    flex-direction: row; 
+    justify-content: space-between;
+    
+    width: 70%;
+}
+
+
+.section_gauche {
+    display: inline-flex;
+    flex-direction: column; 
+    justify-content: left;
+    width: 30%;
+}
+
+.section_droite {
+    display: inline-flex;
+    flex-direction: column; 
+    justify-content: right;
+    width: 30%;
+}
