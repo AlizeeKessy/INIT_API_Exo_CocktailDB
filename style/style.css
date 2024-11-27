@@ -1,19 +1,39 @@
 #container {
-    background-color: rgb(228, 228, 228);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    background-color: rgb(255, 255, 255);
+    width: 100%;
+    height: 100%;
 }
-
-#postHeader {
-    margin: 1;
-    background-color: rgb(49, 45, 45);
-    display: inline-flex;
-    flex-direction: row; 
+#posiHeader {
+    display: flex;
+    flex-direction: row;
     justify-content: space-between;
-    
-    width: 70%;
+    width: 50%;
+    margin: 0 auto;
+    border: 1px solid #1bcab0;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #303131;
+
+}
+#posiMain {
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    width: 50%;
+    height: 100%;
+    margin: 0 auto;
+    border: 1px solid #1bcab0;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #e3e9e7;
 }
 
 
 .section_gauche {
+    color: white;
     display: inline-flex;
     flex-direction: column; 
     justify-content: left;
@@ -21,8 +41,19 @@
 }
 
 .section_droite {
+    color: white;
     display: inline-flex;
     flex-direction: column; 
     justify-content: right;
     width: 30%;
+}
+
+#bouton {
+    cursor: pointer;
+    background-color: red;
+}
+
+#btnSearch {
+    cursor: pointer;
+    background-color: red;
 }

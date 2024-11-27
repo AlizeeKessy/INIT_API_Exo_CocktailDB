@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choisir un Cocktail</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        select, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .cocktail-list {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .cocktail-list li {
+            padding: 15px;
+            background-color: #fff;
+            margin: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 200px;
+        }
+        .cocktail-list img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .cocktail-list li:hover {
+            background-color: #e2e2e2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Choisissez un Cocktail</h1>
+        
+        <!-- Liste déroulante pour choisir un ingrédient -->
+        <label for="ingredient-select">Choisir un ingrédient:</label>
+        <select id="ingredient-select">
+            <option value="">--Choisir un ingrédient--</option>
+        </select>
+        
+        <button id="filter-button">Filtrer par ingrédient</button>
+        
+        <!-- Liste déroulante pour choisir un cocktail par nom -->
+        <label for="cocktail-name-select">Choisir un cocktail:</label>
+        <select id="cocktail-name-select">
+            <option value="">--Choisir un cocktail--</option>
+        </select>
+        
+        <button id="search-button">Rechercher par nom</button>
+
+        <!-- Affichage de la liste des cocktails -->
+        <ul id="cocktail-list" class="cocktail-list"></ul>
+    </div>
+
+    <script>
+        // Remplir la liste des ingrédients (exemple statique ici)
+        const ingredientsSet = new Set([
+            'Tequila', 'Triple sec', 'Lime juice', 'White rum', 'Sugar', 'Mint', 'Soda water', 
+            'Coconut cream', 'Pineapple juice', 'Vodka', 'Cranberry juice'
+        ]);
+
+        // Remplir le select avec les ingrédients
+        const ingredientSelect = document.getElementById('ingredient-select');
+        ingredientsSet.forEach(ingredient => {
+            const option = document.createElement('option');
+            option.value = ingredient;
+            option.textContent = ingredient;
+            ingredientSelect.appendChild(option);
+        });
+
+        // Fonction pour remplir la liste des cocktails
+        function populateCocktailNames(cocktails) {
+            const cocktailNameSelect = document.getElementById('cocktail-name-select');
+            cocktailNameSelect.innerHTML = '<option value="">--Choisir un cocktail--</option>'; // Réinitialiser la liste
+            cocktails.forEach(cocktail => {
+                const option = document.createElement('option');
+                option.value = cocktail.strDrink;
+                option.textContent = cocktail.strDrink;
+                cocktailNameSelect.appendChild(option);
+            });
+        }
+
+        // Fonction pour afficher la liste des cocktails
+        function displayCocktails(cocktails) {
+            const cocktailList = document.getElementById('cocktail-list');
+            cocktailList.innerHTML = ''; // Réinitialiser la liste avant d'afficher
+
+            if (cocktails && cocktails.length > 0) {
+                cocktails.forEach(cocktail => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        <img src="${cocktail.strDrinkThumb}" alt="${cocktail.strDrink}">
+                        <strong>${cocktail.strDrink}</strong><br>
+                        <p>${cocktail.strInstructions}</p>
+                    `;
+                    cocktailList.appendChild(listItem);
+                });
+            } else {
+                cocktailList.innerHTML = '<li>Aucun cocktail trouvé.</li>';
+            }
+        }
+
+        // Fonction pour récupérer les cocktails par ingrédient via l'API TheCocktailDB
+        async function fetchCocktailsByIngredient(ingredient) {
+            const url = ingredient ? 
+                `https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${ingredient}` :
+                'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita';  // Recherche par défaut "margarita"
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.drinks) {
+                    displayCocktails(data.drinks);
+                    populateCocktailNames(data.drinks);
+                } else {
+                    displayCocktails([]);
+                    populateCocktailNames([]);
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des cocktails:', error);
+            }
+        }
+
+        // Fonction pour récupérer les cocktails par nom via l'API TheCocktailDB
+        async function fetchCocktailByName(cocktailName) {
+            const url = cocktailName ? 
+                `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${cocktailName}` :
+                'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita';  // Recherche par défaut "margarita"
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.drinks) {
+                    displayCocktails(data.drinks);
+                } else {
+                    displayCocktails([]);
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des cocktails:', error);
+            }
+        }
+
+        // Ajouter un événement au bouton pour filtrer par ingrédient
+        document.getElementById('filter-button').addEventListener('click', () => {
+            const selectedIngredient = ingredientSelect.value;
+            fetchCocktailsByIngredient(selectedIngredient);
+        });
+
+        // Ajouter un événement au bouton pour rechercher par nom
+        document.getElementById('search-button').addEventListener('click', () => {
+            const selectedCocktailName = document.getElementById('cocktail-name-select').value;
+            fetchCocktailByName(selectedCocktailName);
+        });
+
+        // Afficher tous les cocktails au début (par défaut Margarita)
+        fetchCocktailsByIngredient('');
+    </script>
+</body>
+</html>
